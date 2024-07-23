@@ -5,6 +5,6 @@
   "documentation": "https://github.com/yourusername/suncalc_component",
   "dependencies": [],
   "codeowners": ["@yourusername"],
-  "requirements": ["suncalc==1.0.1"],  // Specify the version if needed
+  "requirements": ["suncalc==1.0.1"],
   "config_flow": true
 }
