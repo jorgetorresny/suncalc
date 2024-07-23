@@ -4,6 +4,7 @@ from homeassistant.components.sensor import SensorEntity
 from homeassistant.const import CONF_LATITUDE, CONF_LONGITUDE
 import suncalc
 from datetime import datetime
+import pandas as pd
 
 from .const import DOMAIN
 
@@ -76,10 +77,14 @@ class SunCalcSensor(SensorEntity):
         """Fetch new state data for the sensor."""
         try:
             times = suncalc.get_times(datetime.now(), self._latitude, self._longitude)
-            if self._sensor_type in times:
-                self._state = times[self._sensor_type].strftime('%H:%M:%S')
+            time_value = times.get(self._sensor_type, pd.NaT)
+            if pd.isna(time_value):
+                self._state = None
+                _LOGGER.warning(f"SunCalc returned NaT for {self._name}")
             elif self._sensor_type == "daylight_duration":
                 self._state = str(times['sunset'] - times['sunrise'])
+            else:
+                self._state = time_value.strftime('%H:%M:%S')
             
             self._attributes.update({
                 "latitude": self._latitude,
