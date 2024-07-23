@@ -1,4 +1,5 @@
 import logging
+import warnings
 from datetime import timedelta
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.const import CONF_LATITUDE, CONF_LONGITUDE
@@ -76,19 +77,23 @@ class SunCalcSensor(SensorEntity):
     def update(self):
         """Fetch new state data for the sensor."""
         try:
-            times = suncalc.get_times(datetime.now(), self._latitude, self._longitude)
-            time_value = times.get(self._sensor_type, pd.NaT)
-            if pd.isna(time_value):
-                self._state = None
-                _LOGGER.warning(f"SunCalc returned NaT for {self._name}")
-            elif self._sensor_type == "daylight_duration":
-                self._state = str(times['sunset'] - times['sunrise'])
-            else:
-                self._state = time_value.strftime('%H:%M:%S')
-            
-            self._attributes.update({
-                "latitude": self._latitude,
-                "longitude": self._longitude
-            })
+            with warnings.catch_warnings():
+                warnings.filterwarnings('error', category=RuntimeWarning)
+                times = suncalc.get_times(datetime.now(), self._latitude, self._longitude)
+                time_value = times.get(self._sensor_type, pd.NaT)
+                if pd.isna(time_value):
+                    self._state = None
+                    _LOGGER.warning(f"SunCalc returned NaT for {self._name}")
+                elif self._sensor_type == "daylight_duration":
+                    self._state = str(times['sunset'] - times['sunrise'])
+                else:
+                    self._state = time_value.strftime('%H:%M:%S')
+                
+                self._attributes.update({
+                    "latitude": self._latitude,
+                    "longitude": self._longitude
+                })
+        except RuntimeWarning as rw:
+            _LOGGER.warning(f"RuntimeWarning encountered: {rw}")
         except Exception as e:
             _LOGGER.error(f"Error updating SunCalc sensor {self._name}: {e}")
