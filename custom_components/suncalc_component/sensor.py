@@ -6,6 +6,7 @@ from homeassistant.const import CONF_LATITUDE, CONF_LONGITUDE
 import suncalc
 from datetime import datetime
 import pandas as pd
+import numpy as np
 
 from .const import DOMAIN
 
@@ -85,6 +86,13 @@ class SunCalcSensor(SensorEntity):
             with warnings.catch_warnings():
                 warnings.filterwarnings('error', category=RuntimeWarning)
                 times = suncalc.get_times(datetime.now(), self._latitude, self._longitude)
+                
+                # Sanitize times to avoid invalid arccos calculations
+                for key, value in times.items():
+                    if key != "daylight_duration" and isinstance(value, datetime):
+                        if not (-1 <= np.cos(np.radians(self._latitude)) <= 1):
+                            raise ValueError(f"Invalid value for arccos calculation: {np.cos(np.radians(self._latitude))}")
+
                 time_value = times.get(self._sensor_type, pd.NaT)
                 if pd.isna(time_value):
                     self._state = None
