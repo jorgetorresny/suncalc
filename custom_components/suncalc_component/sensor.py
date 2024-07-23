@@ -77,6 +77,11 @@ class SunCalcSensor(SensorEntity):
     def update(self):
         """Fetch new state data for the sensor."""
         try:
+            if not (-90 <= self._latitude <= 90):
+                raise ValueError(f"Invalid latitude value: {self._latitude}")
+            if not (-180 <= self._longitude <= 180):
+                raise ValueError(f"Invalid longitude value: {self._longitude}")
+
             with warnings.catch_warnings():
                 warnings.filterwarnings('error', category=RuntimeWarning)
                 times = suncalc.get_times(datetime.now(), self._latitude, self._longitude)
@@ -95,5 +100,7 @@ class SunCalcSensor(SensorEntity):
                 })
         except RuntimeWarning as rw:
             _LOGGER.warning(f"RuntimeWarning encountered: {rw}")
+        except ValueError as ve:
+            _LOGGER.error(f"ValueError: {ve}")
         except Exception as e:
             _LOGGER.error(f"Error updating SunCalc sensor {self._name}: {e}")
