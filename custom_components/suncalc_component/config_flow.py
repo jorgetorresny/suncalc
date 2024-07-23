@@ -19,7 +19,12 @@ class SunCalcConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema({
-                vol.Required(CONF_LATITUDE): cv.latitude,
-                vol.Required(CONF_LONGITUDE): cv.longitude,
-            })
+                vol.Required(CONF_LATITUDE, description={"suggested_value": ""}): cv.latitude,
+                vol.Required(CONF_LONGITUDE, description={"suggested_value": ""}): cv.longitude,
+            }),
+            errors={},
+            description_placeholders={
+                "latitude": "Enter the latitude for your location",
+                "longitude": "Enter the longitude for your location"
+            }
         )
