@@ -1,1 +1,2 @@
 DOMAIN = "suncalc_component"
+
