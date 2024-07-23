@@ -1,0 +1,10 @@
+{
+  "domain": "suncalc_component",
+  "name": "SunCalc Component",
+  "version": "1.0.0",
+  "documentation": "https://github.com/yourusername/suncalc_component",
+  "dependencies": [],
+  "codeowners": ["@yourusername"],
+  "requirements": ["suncalc==1.0.1"],  // Specify the version if needed
+  "config_flow": true
+}

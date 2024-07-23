@@ -1,0 +1,9 @@
+{
+  "name": "SunCalc Component",
+  "content_in_root": false,
+  "domains": ["sensor"],
+  "homeassistant": "0.110.0",
+  "render_readme": true,
+  "country": "us",
+  "zip_release": false
+}
