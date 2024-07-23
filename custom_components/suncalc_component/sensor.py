@@ -47,6 +47,7 @@ class SunCalcSensor(SensorEntity):
         self._longitude = longitude
         self._sensor_type = sensor_type
         self._name = SENSOR_TYPES[sensor_type]
+        self._unique_id = f"{latitude}-{longitude}-{sensor_type}"
         self._state = None
         self._attributes = {}
         self.update()
@@ -60,6 +61,11 @@ class SunCalcSensor(SensorEntity):
     def state(self):
         """Return the state of the sensor."""
         return self._state
+
+    @property
+    def unique_id(self):
+        """Return the unique ID of the sensor."""
+        return self._unique_id
 
     @property
     def extra_state_attributes(self):
